@@ -18,11 +18,18 @@
 # update()
 
 def assemble_dict(dictkeys, dictvalues):
-    pass
+    keys_length = len(dictkeys)
+    values_length = len(dictvalues)
+    if keys_length > values_length:
+        dictkeys = dictkeys[:values_length]
+    elif values_length > keys_length:
+        dictvalues = dictvalues[:keys_length]
+    return dict(zip(dictkeys, dictvalues))
 
 
 def append_dict(dict1, dict2):
-    pass
+    dict1.update(dict2)
+    return dict1
 
 
 ############################################################
@@ -36,7 +43,7 @@ def append_dict(dict1, dict2):
 # where newlist is a shallow copy of the original mylist and where add
 # is appended to mylist
 def copy(mylist, new):
-    pass
+    return mylist, mylist + [new]
 
 
 # The function all_but_last(seq) should return a new sequence
@@ -44,12 +51,15 @@ def copy(mylist, new):
 # If the input sequence is empty, a new empty sequence of the same type
 # should be returned.
 def all_but_last(seq):
-    pass
+    if len(seq) == 0:
+        return seq
+    return seq[:-1]
 
 
-# The function every_other(seq) should returns a new sequence
+# The function every_other(seq) should return a new sequence
 # containing every other element of the input sequence, starting
 # with the first. Hint: This function can be written in one
 # line using the optional third parameter of the slice notation.
 def every_other(seq):
-    pass
+    return seq[::2]
+
