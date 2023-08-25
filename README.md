@@ -6,5 +6,7 @@ For notes on the course, see the [notion page](https://achieved-damselfly-0d0.no
 - Meeting 2 Activity
   - Dictionaries
   - Sequence Slicing
+- Meeting 3 Activity
+  - List Comprehensions
 
 
