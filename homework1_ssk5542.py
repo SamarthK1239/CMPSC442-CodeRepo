@@ -11,6 +11,7 @@ import random
 import copy
 from collections import deque
 
+
 ############################################################
 
 # Include your imports here, if any are used.
@@ -166,59 +167,172 @@ def create_puzzle(rows, cols):
 # name, this function should treat all disks as being identical.
 # Your solver for this problem should be implemented using a breadth-first graph search. The
 # exact solution produced is not important, as long as it is of minimal length.
+from collections import deque
+
+
 def solve_identical_disks(length, n):
-    # Create a queue for BFS
-    queue = deque()
+    def apply_move(board, i, steps):
+        if (i + steps) < 0 or (i + steps) >= length:
+            return
+        board[i + steps] = board[i]
+        board[i] = None
 
-    # Initialize the starting state
-    start_state = ([i for i in range(n)], [])
+    def successors(board):
+        for i, cell in enumerate(board):
+            if cell is not None:
+                if i + 1 < length and board[i + 1] is None:
+                    new_board = list(board[:])
+                    apply_move(new_board, i, 1)
+                    yield (i, i + 1), new_board
 
-    # Add the starting state to the queue
-    queue.append(start_state)
+                if i + 2 < length and board[i + 2] is None and board[i + 1] is not None:
+                    new_board = list(board[:])
+                    apply_move(new_board, i, 2)
+                    yield (i, i + 2), new_board
 
-    # Initialize a set to keep track of visited states
-    visited = set()
+                if i - 1 >= 0 and board[i - 1] is None:
+                    new_board = list(board[:])
+                    apply_move(new_board, i, -1)
+                    yield (i, i - 1), new_board
 
-    # Initialize a list to store the final solution
+                if i - 2 >= 0 and board[i - 2] is None and board[i - 1] is not None:
+                    new_board = list(board[:])
+                    apply_move(new_board, i, -2)
+                    yield (i, i - 2), new_board
+
+    def is_solved_identical(board):
+        for i in range(length - n):
+            if board[i] is not None:
+                return False
+        return True
+
+    # Explored board states will be stored here.
+    explored = set()
+
+    # deque is used. FIFO for BFS.
+    q = deque()
+    initial_board = [1 if i < n else None for i in range(length)]
+    q.append((initial_board, []))  # (board, moves)
+
     solution = []
 
-    while queue:
-        current_state = queue.popleft()
-        current_disks, current_moves = current_state
+    while q:
+        board, moves = q.popleft()
+        explored.add(tuple(board))
 
-        if len(current_moves) == length - n:
-            # We've moved all disks to the end, found a solution
-            solution = current_moves
-            break
-
-        for i in range(length):
-            if i not in current_disks:
+        for move, new_board in successors(board):
+            board_tuple = tuple(new_board)
+            if board_tuple in explored:
                 continue
+            new_moves = moves + [move]
+            if is_solved_identical(new_board):
+                return new_moves
+            q.append((new_board, new_moves))
 
-            for j in range(-2, 3):
-                if j == 0:
-                    continue
+    return None
 
-                new_pos = i + j
 
-                if 0 <= new_pos < length and new_pos not in current_disks:
-                    new_disks = current_disks[:]
-                    new_disks.remove(i)
-                    new_disks.append(new_pos)
-                    new_moves = current_moves + [(i, new_pos)]
-                    new_state = (tuple(new_disks), new_moves)  # Convert back to tuple
+def apply_move(board, i, steps):
+    if (i + steps) < 0 or (i + steps) >= len(board):
+        return
+    board[i + steps] = board[i]
+    board[i] = None
 
-                    if tuple(new_disks) not in visited:
-                        visited.add(new_state)
-                        queue.append(new_state)
 
-    return solution
+def successors(board):
+    for i, cell in enumerate(board):
+        if cell is not None:
+            if i + 1 < len(board) and board[i + 1] is None:
+                new_board = list(board[:])
+                apply_move(new_board, i, 1)
+                yield (i, i + 1), new_board
+
+            if i + 2 < len(board) and board[i + 2] is None and board[i + 1] is not None:
+                new_board = list(board[:])
+                apply_move(new_board, i, 2)
+                yield (i, i + 2), new_board
+
+            if i - 1 >= 0 and board[i - 1] is None:
+                new_board = list(board[:])
+                apply_move(new_board, i, -1)
+                yield (i, i - 1), new_board
+
+            if i - 2 >= 0 and board[i - 2] is None and board[i - 1] is not None:
+                new_board = list(board[:])
+                apply_move(new_board, i, -2)
+                yield (i, i - 2), new_board
+
+
+def is_solved_distinct(board, n):
+    for i in range(len(board) - n):
+        if board[i] is not None:
+            return False
+    return True
+
 
 def solve_distinct_disks(length, n):
-    pass
+    def apply_move(board, i, steps):
+        if (i + steps) < 0 or (i + steps) >= length:
+            return
+        board[i + steps] = board[i]
+        board[i] = None
+
+    def successors(board):
+        for i, cell in enumerate(board):
+            if cell is not None:
+                if i + 1 < length and board[i + 1] is None:
+                    new_board = list(board[:])
+                    apply_move(new_board, i, 1)
+                    yield (i, i + 1), new_board
+
+                if i + 2 < length and board[i + 2] is None and board[i + 1] is not None:
+                    new_board = list(board[:])
+                    apply_move(new_board, i, 2)
+                    yield (i, i + 2), new_board
+
+                if i - 1 >= 0 and board[i - 1] is None:
+                    new_board = list(board[:])
+                    apply_move(new_board, i, -1)
+                    yield (i, i - 1), new_board
+
+                if i - 2 >= 0 and board[i - 2] is None and board[i - 1] is not None:
+                    new_board = list(board[:])
+                    apply_move(new_board, i, -2)
+                    yield (i, i - 2), new_board
+
+    def is_solved_distinct(board):
+        for i in range(length - n):
+            if board[i] is not None:
+                return False
+        return True
+
+    # Explored board states will be stored here.
+    explored = set()
+
+    # deque is used. FIFO for BFS.
+    q = deque()
+    initial_board = [i + 1 if i < n else None for i in range(length)]
+    q.append((initial_board, []))  # (board, moves)
+
+    solution = []
+
+    while q:
+        board, moves = q.popleft()
+        explored.add(tuple(board))
+
+        for move, new_board in successors(board):
+            board_tuple = tuple(new_board)
+            if board_tuple in explored:
+                continue
+            new_moves = moves + [move]
+            if is_solved_distinct(new_board):
+                return new_moves
+            q.append((new_board, new_moves))
+
+    return None
 
 
-print(solve_identical_disks(4, 2))
+print(solve_distinct_disks(4, 3))
 ############################################################
 # Section 4: Feedback
 ############################################################
