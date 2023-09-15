@@ -263,73 +263,83 @@ def successors(board):
                 yield (i, i - 2), new_board
 
 
-def is_solved_distinct(board, n):
-    for i in range(len(board) - n):
-        if board[i] is not None:
-            return False
-    return True
+class LinearDisk2:
+    def __init__(self, cells, n):
+        self.cells = cells
+        self.n = n
+        self.length = len(cells)
+
+    def perform_move(self, i, j):
+        if 0 <= i < self.length and 0 <= j < self.length:
+            self.cells[i], self.cells[j] = self.cells[j], self.cells[i]
+
+    def is_solved(self):
+        return all(self.cells[self.length - i - 1] == i for i in range(self.n))
+
+    def copy(self):
+        return LinearDisk2(self.cells.copy(), self.n)
+
+    def successors(self):
+        for i in range(self.length):
+            if self.cells[i] >= 0:
+                if i < self.length - 1 and self.cells[i + 1] < 0:
+                    new_cells = self.copy()
+                    new_cells.perform_move(i, i + 1)
+                    yield (i, i + 1), new_cells
+                if i < self.length - 2 and self.cells[i + 2] < 0 and self.cells[i + 1] >= 0:
+                    new_cells = self.copy()
+                    new_cells.perform_move(i, i + 2)
+                    yield (i, i + 2), new_cells
+                if i >= 1 and self.cells[i - 1] < 0:
+                    new_cells = self.copy()
+                    new_cells.perform_move(i, i - 1)
+                    yield (i, i - 1), new_cells
+                if i >= 2 and self.cells[i - 2] < 0 and self.cells[i - 1] >= 0:
+                    new_cells = self.copy()
+                    new_cells.perform_move(i, i - 2)
+                    yield (i, i - 2), new_cells
 
 
 def solve_distinct_disks(length, n):
-    def apply_move(board, i, steps):
-        if (i + steps) < 0 or (i + steps) >= length:
-            return
-        board[i + steps] = board[i]
-        board[i] = None
+    cells = [i for i in range(n)] + [-1 for _ in range(n, length)]
+    disk = LinearDisk2(cells, n)
 
-    def successors(board):
-        for i, cell in enumerate(board):
-            if cell is not None:
-                if i + 1 < length and board[i + 1] is None:
-                    new_board = list(board[:])
-                    apply_move(new_board, i, 1)
-                    yield (i, i + 1), new_board
+    if disk.is_solved():
+        return []
 
-                if i + 2 < length and board[i + 2] is None and board[i + 1] is not None:
-                    new_board = list(board[:])
-                    apply_move(new_board, i, 2)
-                    yield (i, i + 2), new_board
+    cells_set = set()
+    cells_set.add(tuple(disk.cells))
 
-                if i - 1 >= 0 and board[i - 1] is None:
-                    new_board = list(board[:])
-                    apply_move(new_board, i, -1)
-                    yield (i, i - 1), new_board
+    tail, head = 0, 0
+    queue = [[(0, 0), disk.copy(), -1]]
+    is_solved = False
 
-                if i - 2 >= 0 and board[i - 2] is None and board[i - 1] is not None:
-                    new_board = list(board[:])
-                    apply_move(new_board, i, -2)
-                    yield (i, i - 2), new_board
+    while tail <= head:
+        p = queue[tail][1]
+        for move, new_p in p.successors():
+            cells = tuple(new_p.cells)
+            if cells not in cells_set:
+                cells_set.add(cells)
+                head += 1
+                queue.append([move, new_p, tail])
+                if new_p.is_solved():
+                    is_solved = True
+                    break
+        tail += 1
+        if is_solved:
+            break
 
-    def is_solved_distinct(board):
-        for i in range(length - n):
-            if board[i] is not None:
-                return False
-        return True
+    if not is_solved:
+        return None
 
-    # Explored board states will be stored here.
-    explored = set()
+    path = []
+    parent = head
 
-    # deque is used. FIFO for BFS.
-    q = deque()
-    initial_board = [i + 1 if i < n else None for i in range(length)]
-    q.append((initial_board, []))  # (board, moves)
-
-    solution = []
-
-    while q:
-        board, moves = q.popleft()
-        explored.add(tuple(board))
-
-        for move, new_board in successors(board):
-            board_tuple = tuple(new_board)
-            if board_tuple in explored:
-                continue
-            new_moves = moves + [move]
-            if is_solved_distinct(new_board):
-                return new_moves
-            q.append((new_board, new_moves))
-
-    return None
+    while True:
+        if parent == 0:
+            return list(reversed(path))
+        path.append(queue[parent][0])
+        parent = queue[parent][2]
 
 
 print(solve_distinct_disks(4, 3))
