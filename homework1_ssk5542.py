@@ -342,25 +342,18 @@ def solve_distinct_disks(length, n):
         parent = queue[parent][2]
 
 
-print(solve_distinct_disks(4, 3))
 ############################################################
 # Section 4: Feedback
 ############################################################
 
 feedback_question_1 = """
-Type your response here.
-Your response may span multiple lines.
-Do not include these instructions in your response.
+I spent about 8.5 hours on this assignment.
 """
 
 feedback_question_2 = """
-Type your response here.
-Your response may span multiple lines.
-Do not include these instructions in your response.
+I found question 3 the most challenging, and solving it involved rewriting the code multiple times.
 """
 
 feedback_question_3 = """
-Type your response here.
-Your response may span multiple lines.
-Do not include these instructions in your response.
+I liked all the questions in this assignment, even if they were challenging. I wouldn't really change anything besides adding more test cases when the assignment is released.
 """
