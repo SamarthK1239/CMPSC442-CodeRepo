@@ -4,8 +4,8 @@ import tkinter
 # Replace STUDENTID with your student id
 import homework1_ssk5542 as homework2
 
-class Light(tkinter.Canvas):
 
+class Light(tkinter.Canvas):
     BACKGROUND_ON = "white"
     BACKGROUND_OFF = "gray50"
 
@@ -14,8 +14,8 @@ class Light(tkinter.Canvas):
 
     def __init__(self, master, size=60):
         tkinter.Canvas.__init__(self, master, height=size, width=size,
-            background=Light.BACKGROUND_OFF, highlightthickness=2,
-            highlightbackground=Light.BORDER_OFF)
+                                background=Light.BACKGROUND_OFF, highlightthickness=2,
+                                highlightbackground=Light.BORDER_OFF)
 
     def set_state(self, state):
         color = Light.BACKGROUND_ON if state else Light.BACKGROUND_OFF
@@ -24,6 +24,7 @@ class Light(tkinter.Canvas):
     def set_selected(self, selected):
         color = Light.BORDER_ON if selected else Light.BORDER_OFF
         self.configure(highlightbackground=color)
+
 
 class Board(tkinter.Frame):
 
@@ -42,7 +43,7 @@ class Board(tkinter.Frame):
                 light = Light(self)
                 light.grid(row=row, column=col, padx=1, pady=1)
                 light.bind("<Button-1>",
-                    lambda event, row=row, col=col: self.click(row, col))
+                           lambda event, row=row, col=col: self.click(row, col))
                 row_lights.append(light)
             self.lights.append(row_lights)
 
@@ -59,22 +60,26 @@ class Board(tkinter.Frame):
     def animate_moves(self, moves, delay=500):
         if moves:
             row, col = moves[0]
+
             def stage_1():
                 self.lights[row][col].set_selected(True)
                 self.after(delay, stage_2)
+
             def stage_2():
                 self.lights[row][col].set_selected(False)
                 self.puzzle.perform_move(row, col)
                 self.update_lights()
                 self.after(delay, stage_3)
+
             def stage_3():
                 self.animate_moves(moves[1:], delay=delay)
+
             stage_1()
+
 
 class LightsOutGUI(tkinter.Frame):
 
     def __init__(self, master, rows, cols):
-
         tkinter.Frame.__init__(self, master)
 
         self.puzzle = homework2.create_puzzle(rows, cols)
@@ -95,6 +100,7 @@ class LightsOutGUI(tkinter.Frame):
 
     def solve_click(self):
         self.board.animate_moves(self.puzzle.find_solution())
+
 
 if __name__ == "__main__":
     root = tkinter.Tk()
