@@ -8,5 +8,13 @@ For notes on the course, see the [notion page](https://achieved-damselfly-0d0.no
   - Sequence Slicing
 - Meeting 3 Activity
   - List Comprehensions
+- Meeting 4 Activity
+  - Combinatorics
+  - Text Processing
+- Homework 1 (```homework1_ssk5542.py``` and ```homework1_lights_out_gui.py```)
+  - Various logic problems including:
+    - N-Queens problem
+    - Lights out grid
+    - Linear Disk Movement
 
 
