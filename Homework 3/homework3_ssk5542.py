@@ -338,7 +338,7 @@ horned = Atom("horned")
 magical = Atom("magical")
 kb1.tell(Implies(mythical, Not(mortal)))
 kb1.tell(Implies(Not(mythical), And(mortal, mammal)))
-kb1.tell(Implies(Or(mortal, mammal), horned))
+kb1.tell(Implies(Or(not(mortal), mammal), horned))
 kb1.tell(Implies(horned, magical))
 
 # Write an Expr for each query that should be asked of the knowledge base
